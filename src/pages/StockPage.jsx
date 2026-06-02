@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import FeaturedCars from "../components/FeaturedCars.jsx";
 import SearchBar from "../components/SearchBar.jsx";
@@ -12,11 +12,50 @@ export default function StockPage() {
   const [filters, setFilters] = useState(() => filtersFromSearch(searchParams));
   const [sort, setSort] = useState("relevancia");
   const [filtersCollapsed, setFiltersCollapsed] = useState(false);
+  const didMount = useRef(false);
+
+  const scrollToResults = () => {
+    window.setTimeout(() => {
+      document.querySelector("#carros-disponiveis")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+  };
 
   useEffect(() => {
     setFilters(filtersFromSearch(searchParams));
     setSort("relevancia");
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!searchParams.toString()) return undefined;
+
+    const timer = window.setTimeout(scrollToResults, 280);
+
+    return () => window.clearTimeout(timer);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const filterKey = [
+      filters.query,
+      filters.brand,
+      filters.model,
+      filters.year,
+      filters.price,
+      filters.transmission,
+      filters.body,
+      filters.kmLimit,
+      filters.tag,
+    ].join("|");
+
+    if (!didMount.current) {
+      didMount.current = true;
+      return undefined;
+    }
+
+    if (!filterKey.replace(/\|/g, "")) return undefined;
+
+    const timer = window.setTimeout(scrollToResults, 180);
+    return () => window.clearTimeout(timer);
+  }, [filters]);
 
   const title = titleFromFilters(filters);
   const filteredCars = useMemo(() => sortVehicles(vehicles.filter((vehicle) => vehicleMatches(vehicle, filters)), sort), [filters, sort]);
@@ -32,6 +71,7 @@ export default function StockPage() {
 
   const submitSearch = (event) => {
     event.preventDefault();
+    scrollToResults();
   };
 
   const clearFilters = () => {
@@ -85,6 +125,9 @@ export default function StockPage() {
         onSubmit={submitSearch}
         onQuickFilter={quickFilter}
         stockMode
+        resultTitle={title}
+        resultCount={filteredCars.length}
+        onViewResults={() => document.querySelector("#carros-disponiveis")?.scrollIntoView({ behavior: "smooth", block: "start" })}
         filtersCollapsed={filtersCollapsed}
         onToggleMobileFilters={() => setFiltersCollapsed((value) => !value)}
       />

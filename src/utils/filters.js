@@ -57,6 +57,9 @@ export function filtersFromSearch(searchParams) {
   return {
     ...emptyFilters,
     query: searchParams.get("busca") || "",
+    brand: searchParams.get("marca") || "",
+    model: searchParams.get("modelo") || "",
+    year: searchParams.get("ano") || "",
     body: categoryMap[category] || "",
     transmission,
     price: searchParams.get("precoMax") || "",

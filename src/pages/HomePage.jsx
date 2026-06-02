@@ -27,6 +27,12 @@ export default function HomePage() {
     event.preventDefault();
     const params = new URLSearchParams();
     if (filters.query.trim()) params.set("busca", filters.query.trim());
+    if (filters.brand) params.set("marca", filters.brand);
+    if (filters.model) params.set("modelo", filters.model);
+    if (filters.year) params.set("ano", filters.year);
+    if (filters.price) params.set("precoMax", filters.price);
+    if (filters.transmission) params.set("cambio", filters.transmission === "Automático" ? "automatico" : filters.transmission);
+    if (filters.body) params.set("categoria", normalizeCategory(filters.body));
     navigate(`/estoque${params.toString() ? `?${params.toString()}` : ""}`);
   };
 

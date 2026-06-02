@@ -15,6 +15,9 @@ export default function SearchBar({
   onSubmit,
   onQuickFilter,
   stockMode = false,
+  resultTitle = "",
+  resultCount = 0,
+  onViewResults,
   filtersCollapsed = false,
   onToggleMobileFilters,
 }) {
@@ -130,7 +133,18 @@ export default function SearchBar({
               </label>
             </div>
 
-            {!stockMode && (
+            {stockMode ? (
+              <div className="stock-search-summary">
+                <p className="section-kicker">Resultado da busca</p>
+                <h2>{resultTitle || "Estoque AutoPrime"}</h2>
+                <p>
+                  {resultCount} {resultCount === 1 ? "veículo encontrado" : "veículos encontrados"} com os filtros selecionados.
+                </p>
+                <button className="stock-action-button primary" type="button" onClick={onViewResults}>
+                  Ver veículos encontrados
+                </button>
+              </div>
+            ) : (
               <QuickSearch onQuickFilter={onQuickFilter} />
             )}
           </form>
